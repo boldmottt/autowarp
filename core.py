@@ -274,3 +274,49 @@ def iter_images(folder: str) -> list[str]:
             if os.path.isfile(p):
                 out.append(p)
     return out
+
+# ---------------------------------------------------------------- 프리셋
+PRESETS: dict[str, tuple[float, float]] = {
+    "170x70": (170.0, 70.0),
+    "85x35": (85.0, 35.0),
+    "210x297": (210.0, 297.0),
+    "297x210": (297.0, 210.0),
+}
+
+
+def spec_from_preset(name: str, dpi: float = 300.0) -> "Spec":
+    """프리셋 이름('170x70') 또는 직접 입력('150x80')을 Spec 으로."""
+    key = name.lower().replace("×", "x").replace(" ", "")
+    if key in PRESETS:
+        w, h = PRESETS[key]
+        return Spec(w, h, dpi)
+    return Spec.parse(name, dpi)
+
+
+# ---------------------------------------------------------------- 회전
+def rotate90(img: np.ndarray, degrees: int) -> np.ndarray:
+    """90도 단위 회전. 0/90/180/270 만 허용."""
+    d = int(degrees) % 360
+    if d == 0:
+        return img
+    if d == 90:
+        return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    if d == 180:
+        return cv2.rotate(img, cv2.ROTATE_180)
+    if d == 270:
+        return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    raise ValueError(f"회전은 0/90/180/270 만: {degrees}")
+
+
+# ---------------------------------------------------------------- 비율 진단
+def aspect_error(quad: Sequence[Sequence[float]], spec: "Spec") -> float:
+    """검출된 사각형의 가로/세로 비율이 규격과 얼마나 다른지(상대값).
+
+    0 이면 일치. 0.1 이면 10% 늘어나거나 줄어든다는 뜻.
+    """
+    q = order_quad(quad)
+    w = (_dist(q[0], q[1]) + _dist(q[3], q[2])) / 2
+    h = (_dist(q[0], q[3]) + _dist(q[1], q[2])) / 2
+    if w <= 0 or h <= 0:
+        return float("inf")
+    return abs((w / h) / spec.aspect - 1.0)

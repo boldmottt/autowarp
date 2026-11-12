@@ -1,0 +1,20 @@
+AutoWarp
+========
+
+이 프로그램은 아래 오픈소스의 코드를 기반으로 재작업했습니다.
+
+  dewarp — Interactive perspective transform tool
+  Copyright (c) 2025 Robert Marchese
+  MIT License
+  https://github.com/bobm123/dewarp
+
+원본에서 가져온 부분
+  - lib/ 전체 (corner_detector, image_canvas, scale_calibrator, unit_converter)
+  - app.py 의 GUI 골격과 원근 변환·스케일 보정 흐름
+
+AutoWarp 에서 새로 작성/변경한 부분
+  - core.py  : 규격 픽셀 계산(반올림), 다중 사각형 검출, 프레임 오검출 제외,
+               dpi 저장, 한글 경로 처리, 파일명 규칙
+  - cli.py   : 폴더 일괄 처리
+  - tests/   : 합성 이미지 기반 검증
+  - app.py   : 브랜딩, 기본값(170x70mm/300dpi/자동검출), 시편 규격 프리셋

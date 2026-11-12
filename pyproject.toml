@@ -1,0 +1,17 @@
+[project]
+name = "autowarp"
+version = "0.1.0"
+description = "시편 사진 원근 보정 — 실물 규격(mm/dpi) 인쇄용 이미지 생성"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "Pillow>=10.0",
+    "pillow-heif>=0.13",
+]
+
+[project.scripts]
+autowarp = "cli:main"
+
+[tool.setuptools]
+py-modules = ["core", "cli"]
